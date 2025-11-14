@@ -14,3 +14,73 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+// 카드 종류
+enum CardTemplate {
+  CLASSIC
+  CUTE
+  MODERN
+  PIXEL
+}
+
+enum OrnamentType {
+  BALL
+  GIFT
+  RIBBON
+  SOCK
+  SNOW
+  ANGEL
+  BULB
+}
+
+// 크리스마스 트리(이벤트 단위)
+model Tree {
+  id      String   @id @default(cuid())
+  name    String
+  slug    String   @unique
+  startAt DateTime
+  endAt   DateTime
+
+  ornaments Ornament[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+// 사용자가 작성한 크리스마스 카드
+model Card {
+  id           String       @id @default(cuid())
+  toName       String?
+  fromName     String?
+  message      String
+  templateType CardTemplate
+
+  ornament Ornament? // 1:1, 카드 하나당 장식 하나
+
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  deletedAt DateTime?
+}
+
+// 트리 위에 매달리는 장식 (오너먼트)
+model Ornament {
+  id String @id @default(cuid())
+
+  card   Card   @relation(fields: [cardId], references: [id])
+  cardId String @unique // 카드 하나당 장식 하나
+
+  tree   Tree   @relation(fields: [treeId], references: [id])
+  treeId String
+
+  type OrnamentType
+
+  // 트리 내 위치 (0.0 ~ 1.0 사이 비율로 저장)
+  posX Float // 0 = 왼쪽, 1 = 오른쪽
+  posY Float // 0 = 위,   1 = 아래
+
+  // 특정 날짜 이후에만 보이게 하고 싶을 때 사용, 없으면 항상 보임
+  visibleFrom  DateTime?
+  visibleUntil DateTime?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
