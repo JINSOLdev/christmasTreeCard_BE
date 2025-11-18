@@ -1,15 +1,17 @@
 import { Injectable } from '@nestjs/common';
+import { Prisma } from '@prisma/client';
 import { PrismaService } from 'src/prisma/prisma.service';
+import { CreateCardDto } from './dto/create-card.dto';
 
 @Injectable()
 export class CardsRepository {
   constructor(private readonly prisma: PrismaService) {}
 
-  createCard(data) {
+  createCard(data: CreateCardDto) {
     return this.prisma.card.create({ data });
   }
 
-  createOrnament(data) {
+  createOrnament(data: Prisma.OrnamentCreateInput) {
     return this.prisma.ornament.create({ data });
   }
 }
