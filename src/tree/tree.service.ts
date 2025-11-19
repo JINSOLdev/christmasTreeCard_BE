@@ -24,7 +24,7 @@ export class TreeService {
       x: ornament.posX,
       y: ornament.posY,
       type: ornament.type,
-      preview: ornament.card.message.slice(0, 15),
+      preview: ornament.card?.message?.slice(0, 15) ?? '',
     }));
 
     return {
