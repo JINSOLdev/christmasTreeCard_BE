@@ -12,7 +12,6 @@ import { TreeModule } from './tree/tree.module';
       isGlobal: true, // 전체 모듈에서 env 사용 가능
     }),
     PrismaModule,
-    ConfigModule,
     CardsModule,
     TreeModule,
   ],
