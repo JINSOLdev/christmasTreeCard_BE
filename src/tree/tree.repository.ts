@@ -9,7 +9,7 @@ export class TreeRepository {
     return this.prisma.tree.findFirst({ where: { slug } });
   }
 
-  findOrnamentsByTreeId(treeId: string, visibleFrom?: string) {
+  findOrnamentsByTreeId(treeId: string, visibleFrom?: Date) {
     return this.prisma.ornament.findMany({
       where: {
         treeId,
