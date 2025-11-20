@@ -55,8 +55,9 @@ async function main() {
     OrnamentType.BALL,
     OrnamentType.GIFT,
     OrnamentType.RIBBON,
-    OrnamentType.SOCK,
+    OrnamentType.HEART,
     OrnamentType.SNOW,
+    OrnamentType.DOLL,
   ];
 
   // 카드와 장식 생성
