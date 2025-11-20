@@ -4,9 +4,6 @@ import { PrismaService } from 'src/prisma/prisma.service';
 import { CreateCardDto } from './dto/create-card.dto';
 import { OrnamentType } from '@prisma/client';
 
-const DEFAULT_TREE_SLUG = 'christmas-2025';
-const DEFAULT_TREE_NAME = '2025 크리스마스 트리';
-
 @Injectable()
 export class CardsService {
   constructor(
@@ -15,38 +12,41 @@ export class CardsService {
   ) {}
 
   async createCard(dto: CreateCardDto) {
-    //랜덤 위치
+    // 1. 랜덤 위치 (트리 안에서 대략적인 비율)
     const posX = Number(Math.random() * 0.8 + 0.1);
     const posY = Number(Math.random() * 0.7 + 0.15);
 
-    // 랜덤 오너먼트 타입 선택
-    const types = [
+    // 2. 랜덤 오너먼트 타입
+    const types: OrnamentType[] = [
       OrnamentType.HEART,
       OrnamentType.DOLL,
       OrnamentType.GIFT,
       OrnamentType.RIBBON,
       OrnamentType.SNOW,
     ];
-
     const type = types[Math.floor(Math.random() * types.length)];
 
     return this.prisma.$transaction(async (tx) => {
-      // 1. 트리 먼저 가져오기 (slug 기준)
-      const tree = await tx.tree.upsert({
-        where: { slug: 'DEFAULT_TREE_SLUG' },
-        update: {},
-        create: {
-          name: DEFAULT_TREE_NAME,
-          slug: DEFAULT_TREE_SLUG,
-          startAt: new Date('2025-11-20T00:00:00Z'),
-          endAt: new Date('2025-12-31T23:59:59Z'),
-        },
+      // 3. 트리 찾기 (없으면 생성)
+      let tree = await tx.tree.findFirst({
+        where: { slug: 'christmas-2025' },
       });
 
-      // 2. 카드 생성
+      if (!tree) {
+        tree = await tx.tree.create({
+          data: {
+            name: '2025 크리스마스 트리',
+            slug: 'christmas-2025',
+            startAt: new Date('2025-12-01T00:00:00.000Z'),
+            endAt: new Date('2025-12-31T23:59:59.999Z'),
+          },
+        });
+      }
+
+      // 4. 카드 생성
       const card = await tx.card.create({ data: dto });
 
-      // 3. 오너먼트 생성
+      // 5. 오너먼트 생성 (트리랑 카드 연결)
       const ornament = await tx.ornament.create({
         data: {
           cardId: card.id,
@@ -57,7 +57,7 @@ export class CardsService {
         },
       });
 
-      // 4. 응답
+      // 6. 프론트에 돌려줄 응답
       return {
         cardId: card.id,
         ornamentId: ornament.id,
