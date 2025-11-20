@@ -4,6 +4,9 @@ import { PrismaService } from 'src/prisma/prisma.service';
 import { CreateCardDto } from './dto/create-card.dto';
 import { OrnamentType } from '@prisma/client';
 
+const DEFAULT_TREE_SLUG = 'christmas-2025';
+const DEFAULT_TREE_NAME = '2025 크리스마스 트리';
+
 @Injectable()
 export class CardsService {
   constructor(
@@ -29,13 +32,16 @@ export class CardsService {
 
     return this.prisma.$transaction(async (tx) => {
       // 1. 트리 먼저 가져오기 (slug 기준)
-      const tree = await tx.tree.findFirst({
-        where: { slug: 'christmas-2025' },
+      const tree = await tx.tree.upsert({
+        where: { slug: 'DEFAULT_TREE_SLUG' },
+        update: {},
+        create: {
+          name: DEFAULT_TREE_NAME,
+          slug: DEFAULT_TREE_SLUG,
+          startAt: new Date('2025-11-20T00:00:00Z'),
+          endAt: new Date('2025-12-31T23:59:59Z'),
+        },
       });
-
-      if (!tree) {
-        throw new Error('Tree not found for slug');
-      }
 
       // 2. 카드 생성
       const card = await tx.card.create({ data: dto });
