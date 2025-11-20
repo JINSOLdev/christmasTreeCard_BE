@@ -23,7 +23,6 @@ enum CardTemplate {
 }
 
 enum OrnamentType {
-  BALL
   GIFT
   RIBBON
   SNOW

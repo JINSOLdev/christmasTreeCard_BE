@@ -19,7 +19,6 @@ export class CardsService {
     // 랜덤 오너먼트 타입 선택
     const types = [
       OrnamentType.HEART,
-      OrnamentType.BALL,
       OrnamentType.DOLL,
       OrnamentType.GIFT,
       OrnamentType.RIBBON,
