@@ -26,10 +26,9 @@ enum OrnamentType {
   BALL
   GIFT
   RIBBON
-  SOCK
   SNOW
-  ANGEL
-  BULB
+  HEART
+  DOLL
 }
 
 // 크리스마스 트리(이벤트 단위)
