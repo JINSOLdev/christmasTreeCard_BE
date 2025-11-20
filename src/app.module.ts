@@ -3,7 +3,8 @@ import { ConfigModule } from '@nestjs/config';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { PrismaModule } from './prisma/prisma.module';
-import { ConfigModule } from './config/config.module';
+import { CardsModule } from './cards/cards.module';
+import { TreeModule } from './tree/tree.module';
 
 @Module({
   imports: [
@@ -11,7 +12,8 @@ import { ConfigModule } from './config/config.module';
       isGlobal: true, // 전체 모듈에서 env 사용 가능
     }),
     PrismaModule,
-    ConfigModule,
+    CardsModule,
+    TreeModule,
   ],
   controllers: [AppController],
   providers: [AppService],
