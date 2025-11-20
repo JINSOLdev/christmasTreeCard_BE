@@ -7,11 +7,15 @@ async function bootstrap() {
   app.enableCors({
     origin: [
       'http://localhost:5173',
-      'https://christmas-tree-card-maw3mbk9r-jinsoldevs-projects.vercel.app/',
+      'https://christmas-tree-card-fe.vercel.app/',
     ],
+    methods: 'GET, POST, PUT, PATCH, DELETE, OPTIONS',
+    allowedHeaders: 'Content-Type, Authorization',
     credentials: true,
   });
-  await app.listen(process.env.PORT ?? 3000);
+
+  const port = Number(process.env.PORT) || 3000;
+  await app.listen(port, '0.0.0.0');
 }
 bootstrap().catch((err) => {
   console.error(`Error during bootstrap:`, err);
