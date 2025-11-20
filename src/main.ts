@@ -5,11 +5,8 @@ async function bootstrap() {
   const app = await NestFactory.create(AppModule, { cors: true });
 
   app.enableCors({
-    origin: [
-      'http://localhost:5173',
-      'https://christmas-tree-card-fe.vercel.app/',
-    ],
-    methods: 'GET, POST, PUT, PATCH, DELETE, OPTIONS',
+    origin: '*',
+    methods: 'GET,POST,PUT,PATCH,DELETE,OPTIONS',
     allowedHeaders: 'Content-Type, Authorization',
     credentials: true,
   });
