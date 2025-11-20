@@ -52,7 +52,6 @@ async function main() {
   ];
 
   const ornamentTypes = [
-    OrnamentType.BALL,
     OrnamentType.GIFT,
     OrnamentType.RIBBON,
     OrnamentType.HEART,
