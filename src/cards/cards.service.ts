@@ -18,12 +18,11 @@ export class CardsService {
 
     // 랜덤 오너먼트 타입 선택
     const types = [
-      OrnamentType.ANGEL,
+      OrnamentType.HEART,
       OrnamentType.BALL,
-      OrnamentType.BULB,
+      OrnamentType.DOLL,
       OrnamentType.GIFT,
       OrnamentType.RIBBON,
-      OrnamentType.SOCK,
       OrnamentType.SNOW,
     ];
 
@@ -60,5 +59,21 @@ export class CardsService {
         position: { x: posX, posY },
       };
     });
+  }
+
+  async getCards() {
+    const cards = await this.cardsRepository.findCards();
+
+    return cards.map((card) => ({
+      id: card.id,
+      toName: card.toName,
+      fromName: card.fromName,
+      message: card.message,
+      templateType: card.templateType,
+      createdAt: card.createdAt,
+      ornamentType: card.ornament?.type ?? null,
+      posX: card.ornament?.posX ?? null,
+      posY: card.ornament?.posY ?? null,
+    }));
   }
 }

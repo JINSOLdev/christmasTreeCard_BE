@@ -14,4 +14,15 @@ export class CardsRepository {
   createOrnament(data: Prisma.OrnamentCreateInput) {
     return this.prisma.ornament.create({ data });
   }
+
+  findCards() {
+    return this.prisma.card.findMany({
+      include: {
+        ornament: true,
+      },
+      orderBy: {
+        createdAt: 'asc',
+      },
+    });
+  }
 }
