@@ -1,98 +1,252 @@
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="120" alt="Nest Logo" /></a>
+# 🎄 Christmas Tree Card Service
+
+> 따뜻한 연말 메시지를 트리에 걸어 함께 채워가는 작은 이벤트성 웹 서비스 입니다. </br>
+
+---
+
+## 카드 생성 플로우
+
+<p align="center" width="100%">
+  <video src="https://github.com/user-attachments/assets/f2c2bc29-80f9-46e5-bc9a-68766ce6355f" width="80%" controls></video>
 </p>
 
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
+---
 
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg" alt="Donate us"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow" alt="Follow us on Twitter"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
+## 프로젝트 소개
 
-## Description
+부트캠프 7개월 동안 함께한 동료들, 강사님, 운영진분들께 감사한 마음을 담아 만든 **크리스마스 카드 트리 서비스**입니다.
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+- 사용자가 작성한 카드가 **트리 위 오너먼트 형태로 나타나며 랜덤 위치에 배치**됩니다.
+- 누구나 쉽게 **카드 작성 → 트리에서 확인** 할 수 있는 단순하고 따뜻한 서비스입니다.
+- 함께 공부한 사람들에게 **작은 선물과 추억을 만들기 위한 이벤트**를 만들고 싶었습니다.
+- 메세지가 쌓여갈수록 트리가 더 풍성해지는 시각적 재미를 전달하고 싶었습니다.
+- 연말의 따뜻함을 담아 소통하기 위한 가벼운 웹 서비스를 제공하고 싶었습니다.
 
-## Project setup
+---
 
-```bash
-$ npm install
+## 주요 기능
+
+### 1. 카드 작성
+- 받는 사람, 보내는 사람, 메시지를 입력하면 서버에 저장되고  
+- 카드가 트리 오너먼트로 등장합니다.
+
+### 2. 트리 보기
+- 지금까지 모인 모든 카드들이 트리 위에 아이콘 형태로 표현됩니다.
+- 좌표는 서버에서 랜덤으로 계산하는 방식으로 중복 생성 방지.
+
+### 3. 카드 모아보기
+- 작성된 카드들을 리스트 형태로 모아볼 수 있습니다.
+
+---
+
+## 기술 스택
+
+### Backend 
+- NestJS
+- TypeScript
+- Prisma ORM
+- PostgreSQL 
+
+### Frontend
+- Vue3
+- Vite
+- Pinia
+- Tailwind CSS
+
+---
+
+## API 설계 시 고민한 점
+
+### 1. 카드 생성과 오너먼트 생성을 분리할 것인가?
+
+문제 </br>
+카드 생성 API와 오너먼트 생성 로직을 분리할 지, 하나의 API에서 처리할지에 대해 고민함
+
+고민 </br>
+- POST /cards : 카드만 생성
+- POST /ornaments : 별도 생성
+처럼 나눌 경우 :
+- 책임 분리는 명확해지지만
+- 두 API를 반드시 순서대로 호출해야 하고
+- 실패 시 데이터 불일치가 발생할 가능성이 존재함
+
+해결 </br>
+카드 생성 시 오너먼트도 함께 생성하도록 하나의 API로 통합하고, 트랜잭션으로 묶어서 처리함
+```
+  // 1. 카드 생성
+      const card = await tx.card.create({ data: dto });
+
+      // 2. 오너먼트 생성 (트리랑 카드 연결)
+      const ornament = await tx.ornament.create({
+        data: {
+          cardId: card.id,
+          treeId: tree.id,
+          type,
+          posX,
+          posY,
+        },
+      });
 ```
 
-## Compile and run the project
+결과 </br>
+Prisma CLI 실행 시 정상적으로 DB 연결이 이루어짐
 
-```bash
-# development
-$ npm run start
+### 2. 트리 데이터를 어떻게 조회할 것인가?
 
-# watch mode
-$ npm run start:dev
+문제 </br>
+트리 화면에서 필요한 데이터를 어떤 구조로 내려줄 지 고민</br>
 
-# production mode
-$ npm run start:prod
+고민 </br>
+초기에는 단순히 Card 리스트를 내려주려고 함
+- 트리 렌더링에는 좌표(posX, posY)가 필요하고
+- 오너먼트 타입 정보도 필요함
+- 즉, Card 만으로는 UI를 구성할 수 없었음
+
+해결 </br>
+Ornament 중심으로 데이터를 내려주도록 구조 변경함 -> ``` GET /tree/:slug/ornaments ```
+응답 구조 :
+```
+{
+  "ornaments": [
+    {
+      "id": "...",
+      "type": "BALL",
+      "x": 0.32,
+      "y": 0.58,
+      "preview": "메리 크리스마스..."
+    }
+  ]
+}
 ```
 
-## Run tests
+결과 </br>
+- 프론트에서 추가 가공 없이 바로 렌더링 가능
+- API 책임 명확해짐 (UI 친화적 데이터 구조)
 
-```bash
-# unit tests
-$ npm run test
+### 3. treeId를 클라이언트에서 받을 것인가?
 
-# e2e tests
-$ npm run test:e2e
+문제 </br>
+카드 생성 시 treeId를 클라이언트에서 받아야 하는지 고민함 </br>
 
-# test coverage
-$ npm run test:cov
+고민 </br>
+- 클라이언트에서 treeId를 넘기면 유연성은 높지만
+- 존재하지 않는 ID를 넘길 가능성이 있고
+- FK 오류 및 보안 문제가 발생할 수 있음
+
+해결 </br>
+서버에서 기준 트리를 직접 조회하여 사용하도록 설계함
+```
+const tree = await tx.tree.findFirst({
+  where: { slug: 'christmas-2025' },
+})
 ```
 
-## Deployment
+결과 </br>
+- 잘못된 요청 방지
+- 서버 중심의 안정적인 데이터 관리
+- 클라이언트 책임 감소
 
-When you're ready to deploy your NestJS application to production, there are some key steps you can take to ensure it runs as efficiently as possible. Check out the [deployment documentation](https://docs.nestjs.com/deployment) for more information.
+### 4. 랜덤 좌표 생성 로직을 어디에서 처리할 것인가?
 
-If you are looking for a cloud-based platform to deploy your NestJS application, check out [Mau](https://mau.nestjs.com), our official platform for deploying NestJS applications on AWS. Mau makes deployment straightforward and fast, requiring just a few simple steps:
+문제 </br>
+오너먼트 위치를 프론트에서 계산할 지, 서버에서 계산할 지 고민 </br>
 
-```bash
-$ npm install -g @nestjs/mau
-$ mau deploy
+고민 </br>
+프론트에서 처리할 경우:
+- 구현은 쉬움
+- 하지만 좌표 중복/충돌 제어 어려움
+
+서버에서 처리할 경우:
+- 로직 복잡도 증가
+- 하지만 데이터 일관성 유지 가능
+
+해결 </br>
+서버에서 랜덤 좌표를 생성하고 DB에 저장하는 방식으로 결정
+```
+  // 1. 랜덤 위치 (트리 안에서 대략적인 비율)
+    const posX = Number(Math.random() * 0.8 + 0.1);
+    const posY = Number(Math.random() * 0.7 + 0.15);
+
+    // 2. 랜덤 오너먼트 타입
+    const types: OrnamentType[] = [
+      OrnamentType.HEART,
+      OrnamentType.DOLL,
+      OrnamentType.GIFT,
+      OrnamentType.RIBBON,
+      OrnamentType.SNOW,
+    ];
+    const type = types[Math.floor(Math.random() * types.length)];
 ```
 
-With Mau, you can deploy your application in just a few clicks, allowing you to focus on building features rather than managing infrastructure.
+결과 </br>
+- 모든 클라이언트에서 동일한 트리 상태 유지
+- 추후 충돌 방지 로직 확장 가능
 
-## Resources
+### 5. 응답 데이터 최소화 vs 확장성
 
-Check out a few resources that may come in handy when working with NestJS:
+문제 </br>
+POST /cards 응답에 어떤 데이터를 포함할지 고민 </br>
 
-- Visit the [NestJS Documentation](https://docs.nestjs.com) to learn more about the framework.
-- For questions and support, please visit our [Discord channel](https://discord.gg/G7Qnnhy).
-- To dive deeper and get more hands-on experience, check out our official video [courses](https://courses.nestjs.com/).
-- Deploy your application to AWS with the help of [NestJS Mau](https://mau.nestjs.com) in just a few clicks.
-- Visualize your application graph and interact with the NestJS application in real-time using [NestJS Devtools](https://devtools.nestjs.com).
-- Need help with your project (part-time to full-time)? Check out our official [enterprise support](https://enterprise.nestjs.com).
-- To stay in the loop and get updates, follow us on [X](https://x.com/nestframework) and [LinkedIn](https://linkedin.com/company/nestjs).
-- Looking for a job, or have a job to offer? Check out our official [Jobs board](https://jobs.nestjs.com).
+고민 </br>
+- 최소한으로 cardId만 줄 것인지
+- 아니면 위치 정보까지 줄 것인지
 
-## Support
+해결 </br>
+초기 UX 개선을 위해 필요한 최소 정보 포함
+```
+return {
+        cardId: card.id,
+        ornamentId: ornament.id,
+        position: { x: posX, posY },
+      };
+```
 
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
+결과 </br>
+- 카드 생성 직후 UI에서 즉히 반영 가능
+- 불필요한 API 추가 호출 감소
+---
 
-## Stay in touch
+## 회고
+- 단순한 카드 작성 서비스였지만, 실제로 구현해보니 데이터 구조와 흐름을 어떻게 설계하느냐에 따라 난이도가 크게 달라지는 작업이었다. 처음에는 카드를 저장하고 보여주면 끝이라고 생각했지만, 카드가 트리 위의 오너먼트로 표현되면서 좌표, 타입, 관계 데이터까지 함께 관리해야 했고, 자연스럽게 단순 CRUD 이상의 고민이 필요했다.
+- 특히 카드 생성과 오너먼트 생성을 분리할 지 하나로 묶을 지 결정하는 과정에서, 기능 단위로 나누는 것보다 데이터 일관성과 API 사용 방식까지 함께 고려해야 한다는 점을 직접 부딪히면서 이해하게 됐다. 단순히 분리하는 게 더 깔끔해 보인다는 기준이 아니라, 실제로 클라이언트에서 어떻게 사용되는지까지 생각해야 한다는 걸 체감한 부분이었다. 결국 트랜잭션으로 묶어서 처리하는 구조로 정리했고, 이 과정에서 서버가 어디까지 책임져야 하는지도 명확해졌다.
+- 트리 화면을 위한 API를 설계하면서도 비슷한 고민이 있었다. 처음에는 Card 데이터를 그대로 내려주려고 했지만, 실제로는 좌표와 오너먼트 타입이 핵심이었기 때문에 구조 자체를 다시 잡아야 했다. 이 경험을 통해 DB 구조와 API 응답 구조는 반드시 같을 필요가 없고, 오히려 사용하는 화면 기준으로 설계하는 게 더 중요하다는 걸 알게 됐다.
+- 구현하면서 만난 문제들도 꽤 많았다. Prisma 환경변수 문제부터 타입 불일치, Fopreign Key 에러까지 하나하나보면 작은 문제였지만 원인을 찾는 과정이 생각보다 오래 걸렸다. 특히 FK 에러는 왜 안되지 수준에서 시작했는데, 결국 존재하지 않는 데이터를 참조하고 있었다는 걸 확인하면서 데이터 관계를 제대로 이해하는 게 정말 중요하다는 걸 새삼 느꼈다.
+- 무엇보다 이 프로젝트에서 가장 크게 느낀 건, 실제로 사용자가 이용하는 서비스를 만든다는 게 생각보다 훨씬 빡세다는 점이었다. 단순히 기능이 돌아가는 것과, 사람들이 문제없이 사용할 수 있는 구조를 만드는 건 완전히 다른 일이었다. 작은 서비스였지만 고려해야 할 요소가 계속 늘어나면서, 자연스럽게 구현보다 설계에 더 많은 시간을 할애했다.
+- 결과적으로 이 프로젝트를 통해서 단순히 기능을 만드는 것에서 벗어나, 데이터 흐름과 API 구조를 먼저 고민하는 방향으로 사고 방식이 바꼈다. 앞으로 기능 구현 전에 이 데이터가 어떻게 흐를지를 먼저 정리하는 방식으로 접근해야겠다는 기준이 생긴 작업이었다. 
 
-- Author - [Kamil Myśliwiec](https://twitter.com/kammysliwiec)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
+---
 
-## License
+## 향후 기능 추가 예정
+### 1. 카드 상세 조회 API
+- 카드 클릭 시 상세 내용을 조회할 수 있는 API 추가 예정
+- 현재는 트리에서 Preview 데이터만 제공하고 있음. 카드의 전체 메시지와 메타데이터를 확인할 수 있도록 확장 예정
 
-Nest is [MIT licensed](https://github.com/nestjs/nest/blob/master/LICENSE).
+### 2. 카드 템플릿 관리 API
+- 카드 템플릿을 서버에서 관리하도록 구조 개선 예정
+- 현재는 프론트에서 템플릿을 고정값으로 사용하고 있으나, 추후 템플릿 추가/수정이 가능하도록 DB 기반 관리로 확장 예정
+
+### 3. 트리 다중 생성 및 조회 기능
+- 여러 개의 트리를 생성하고 선택할 수 있는 구조로 확장 예정
+- 현재는 단일 트리(christmas-2025) 기준으로 동작. 이벤트 단위(연도, 테마 등)로 트리를 분리할 수 있도록 개선 예정
+
+### 4. 오너먼트 충돌 방지 로직 고도화
+- 현재 랜덤 좌표 기반으로 배치하고 있는데, 카드 수가 증가할 경우 오너먼트 간 겹침 가능성이 존재함
+- 거리 기반 충돌 방지 또는 영역 분할 알고리즘등을 적용하여 더 안정적인 UI를 지원할 예정
+
+### 5. 인증 및 사용자 기반 기능 확장
+- 로그인 기능을 도입하여 사용자별 카드 관리 기능 추가 예정
+- 내가 작성한 카드 조회, 수정, 삭제 기능 제공
+- 사용자 기반 이벤트 확장 가능성 고려
+
+### 6. 실시간 트리 업데이트 기능
+- 현재 API 호출 시점 기준으로 트리 데이터를 조회하지만, WebSocket 또는 SSE를 활용하여 카드가 추가될 때 실시간으로 트리에 반영되도록 개선 예정
+
+### 7. 성능 최적화 및 캐싱 전략 도입
+- 카드 수 증가에 따른 트리 조회 성능 개선 필요
+- Redis 캐싱 또는 pagination 전략을 적용하여 대량 데이터에서도 안정적으로 동작하도록 개선 예정
+
+---
+
+## 라이선스
+MIT License
+
